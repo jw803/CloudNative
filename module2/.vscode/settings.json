@@ -1,0 +1,13 @@
+{
+  "go.useLanguageServer": true,
+  "go.languageServerExperimentalFeatures": {
+          "diagnostics": true // for diagnostics as you type
+  },
+  "go.lintOnSave": "package",
+  "[go]": {
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+      },
+  }
+}
