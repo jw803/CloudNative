@@ -1,12 +1,9 @@
-FROM        golang:1.17.2-stretch as builder
-RUN         mkdir -p /app
-WORKDIR     /app
-COPY        . .
-RUN  go build -o /app
-
-FROM bitnami/minideb:stretch
-RUN mkdir -p /app
+FROM golang:1.16-alpine as builder
 WORKDIR /app
-COPY --from=builder /app /app
+COPY . .
+RUN go build -o dist ./main.go
 
+FROM alpine
+COPY --from=builder /app/dist app
+EXPOSE 3000
 ENTRYPOINT  ["./app"]
