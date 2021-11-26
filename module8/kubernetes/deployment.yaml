@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ironman
+  name: httpserver
   labels:
-    name: ironman
-    app: ironman
+    name: httpserver
+    app: httpserver
 spec:
   minReadySeconds: 5
   strategy:
@@ -15,30 +15,42 @@ spec:
   replicas: 5
   selector:
     matchLabels:
-      app: ironman
+      app: httpserver
   template:
     metadata:
       labels:
         app: ironman
     spec:
       nodeSelector:
-        <node-label-key>:<node-label-value>
+        app:httpserver
       containers:
-        - name: ironman
-          image: ghjjhg567/ironman:latest
+        - name: httpserver
+          image: paul803/cncamp-module3:latest
           ports:
-            - containerPort: 8100
+            - containerPort: 3000
           imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
-              path: /v1/hc
-              port: 80
+              path: /healthz
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 20
           resources:
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: "1"
+              memory: "512Mi"
             requests:
               cpu: 500m
               memory: 256Mi

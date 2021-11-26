@@ -3,11 +3,24 @@ package main
 import (
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+
 	"github.com/jw803/module2/pkg"
 )
 
 func main() {
+	signalChan := make(chan os.Signal, 2) 
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
+
+	go func() {
+		<-signalChan // 此处没有系统信号时阻塞，后续代码不执行，有信号时后续代码执行
+	 
+		signal.Stop(signalChan)  // 显式停止监听系统信号
+		close(signalChan) // 显式关闭监听信号的通道
+	}()
+	
 	http.Handle("/healthz", pkg.WithLogging(http.HandlerFunc(healthz)))
 	http.Handle("/req2res", pkg.WithLogging(http.HandlerFunc(req2res)))
 	http.ListenAndServe(":3000", nil)
