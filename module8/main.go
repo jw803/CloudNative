@@ -1,29 +1,51 @@
 package main
 
 import (
+	"context"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/jw803/module2/pkg"
 )
 
 func main() {
-	signalChan := make(chan os.Signal, 2) 
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT)
+	mux := http.NewServeMux()
 
-	go func() {
-		<-signalChan // 此处没有系统信号时阻塞，后续代码不执行，有信号时后续代码执行
-	 
-		signal.Stop(signalChan)  // 显式停止监听系统信号
-		close(signalChan) // 显式关闭监听信号的通道
-	}()
+	mux.Handle("/healthz", pkg.WithLogging(http.HandlerFunc(healthz)))
+	mux.Handle("/req2res", pkg.WithLogging(http.HandlerFunc(req2res)))
+
+	srv := http.Server{
+		Addr:    ":3000",
+		Handler: mux,
+	}
+
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	
-	http.Handle("/healthz", pkg.WithLogging(http.HandlerFunc(healthz)))
-	http.Handle("/req2res", pkg.WithLogging(http.HandlerFunc(req2res)))
-	http.ListenAndServe(":3000", nil)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	log.Print("Server Started")
+	<-done
+	log.Print("Server Stopped")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		// extra handling here
+		cancel()
+	}()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Server Shutdown Failed:%+v", err)
+	}
+	log.Print("Server Exited Properly")
 }
 
 func healthz(w http.ResponseWriter, req *http.Request) {

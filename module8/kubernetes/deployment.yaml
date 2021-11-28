@@ -22,10 +22,10 @@ spec:
         app: ironman
     spec:
       nodeSelector:
-        app:httpserver
+        app: httpserver
       containers:
         - name: httpserver
-          image: paul803/cncamp-module3:latest
+          image: paul803/cncamp-module3
           ports:
             - containerPort: 3000
           imagePullPolicy: Always
@@ -49,27 +49,11 @@ spec:
             periodSeconds: 20
           resources:
             limits:
-              cpu: "1"
-              memory: "512Mi"
+              cpu: 1
+              memory: 512Mi
             requests:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 1
+              memory: 512Mi
           envFrom:
             - configMapRef:
-                name: iroman-config
-          volumeMounts:
-            - mountPath: /etc/nginx/nginx.conf
-              name: nginx-conf-volume
-              subPath: nginx.conf
-              readOnly: true
-            - mountPath: /etc/nginx/conf.d/default.conf
-              subPath: default.conf
-              name: nginx-route-volume
-              readOnly: true
-      volumes:
-        - name: nginx-conf-volume
-          configMap:
-            name: nginx-config
-        - name: nginx-route-volume
-          configMap:
-            name: nginx-route-volume
+                name: paul-config
