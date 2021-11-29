@@ -1,3 +1,4 @@
 #!/bin/bash
-openssl genrsa -out key.pem 2048
-openssl req -new -x509 -key key.pem -out cert.pem -days 3650
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=skyraker.com/O=skyraker"
+kubectl create secret tls hellion-tls --cert=tls.crt --key=tls.key --dry-run=client -oyaml > secret.yaml

@@ -6,7 +6,6 @@ metadata:
     name: httpserver
     app: httpserver
 spec:
-  minReadySeconds: 5
   strategy:
     type: RollingUpdate
     rollingUpdate: 
