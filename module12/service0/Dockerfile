@@ -1,3 +1,10 @@
-FROM ubuntu
-ADD bin/amd64/service0 /service0
-ENTRYPOINT ["/service0"]
+FROM golang:1.16-alpine as builder
+WORKDIR /app
+COPY . .
+RUN go mod download
+RUN go build -o dist ./main.go
+
+FROM alpine
+COPY --from=builder /app/dist app
+EXPOSE 80
+ENTRYPOINT  ["./app"]
