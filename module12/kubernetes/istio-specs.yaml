@@ -1,0 +1,50 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: httpsserver
+spec:
+  gateways:
+    - httpsserver
+  hosts:
+    - httpsserver.paul.io
+  http:
+    - match:
+      - uri:
+        exact: "/simple/hello"
+        port: 443
+      rewrite:
+        uri: "/hello"
+      route:
+        - destination:
+            host: service0.simple.svc.cluster.local
+            port:
+              number: 80
+    - match:
+      - uri:
+        exact: "/nginx"
+        port: 443
+      rewrite:
+        uri: "/"
+      route:
+        - destination:
+            host: nginx.simple.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: httpsserver
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - httpsserver.paul.io
+      port:
+        name: https-default
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: paul-credential
