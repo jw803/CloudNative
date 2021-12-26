@@ -16,7 +16,7 @@ spec:
         uri: "/hello"
       route:
         - destination:
-            host: service0.simple.svc.cluster.local
+            host: service0.module12.svc.cluster.local
             port:
               number: 80
     - match:
@@ -27,7 +27,7 @@ spec:
         uri: "/"
       route:
         - destination:
-            host: nginx.simple.svc.cluster.local
+            host: nginx.module12.svc.cluster.local
             port:
               number: 80
 ---
