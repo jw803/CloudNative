@@ -10,7 +10,7 @@ spec:
   http:
     - match:
       - uri:
-        exact: "/simple/hello"
+          exact: "/simple/hello"
         port: 443
       rewrite:
         uri: "/hello"
@@ -21,7 +21,7 @@ spec:
               number: 80
     - match:
       - uri:
-        exact: "/nginx"
+          exact: "/nginx"
         port: 443
       rewrite:
         uri: "/"
