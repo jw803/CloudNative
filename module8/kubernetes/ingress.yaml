@@ -9,7 +9,7 @@ metadata:
 spec:
   tls:
     - hosts:
-      - api.skyraker.com
+      - api-paul.skyraker.com
       secretName: haproxy-tls
   rules:
   - host: api.skyraker.com
