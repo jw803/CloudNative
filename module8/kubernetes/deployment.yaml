@@ -21,7 +21,7 @@ spec:
         app: httpserver
     spec:
       nodeSelector:
-        app: cc_apiserver
+        app: httpserver
       containers:
         - name: httpserver
           image: paul803/cncamp-module3
